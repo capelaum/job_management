@@ -14,8 +14,8 @@ import org.hibernate.validator.constraints.Length;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity(name = "companies")
 @Data
+@Entity(name = "companies")
 public class CompanyEntity {
 
     @Id

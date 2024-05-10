@@ -13,8 +13,8 @@ public class CreateCandidateUseCase {
     private CandidateRepository candidateRepository;
 
     public CandidateEntity execute(CandidateEntity candidateEntity) {
-        this.candidateRepository.findByUsernameOrEmail(
-                        candidateEntity.getUsername(), candidateEntity.getEmail())
+        this.candidateRepository
+                .findByUsernameOrEmail(candidateEntity.getUsername(), candidateEntity.getEmail())
                 .ifPresent((user) -> {
                     throw new UserFoundException();
                 });
