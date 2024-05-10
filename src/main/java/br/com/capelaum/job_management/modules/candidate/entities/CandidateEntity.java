@@ -1,4 +1,4 @@
-package br.com.capelaum.job_management.modules.candidate;
+package br.com.capelaum.job_management.modules.candidate.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

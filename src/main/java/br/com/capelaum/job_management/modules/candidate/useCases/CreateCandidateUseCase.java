@@ -1,11 +1,10 @@
 package br.com.capelaum.job_management.modules.candidate.useCases;
 
+import br.com.capelaum.job_management.exceptions.UserFoundException;
+import br.com.capelaum.job_management.modules.candidate.entities.CandidateEntity;
+import br.com.capelaum.job_management.modules.candidate.repositories.CandidateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import br.com.capelaum.job_management.exceptions.UserFoundException;
-import br.com.capelaum.job_management.modules.candidate.CandidateEntity;
-import br.com.capelaum.job_management.modules.candidate.CandidateRepository;
 
 @Service
 public class CreateCandidateUseCase {
@@ -15,7 +14,7 @@ public class CreateCandidateUseCase {
 
     public CandidateEntity execute(CandidateEntity candidateEntity) {
         this.candidateRepository.findByUsernameOrEmail(
-                candidateEntity.getUsername(), candidateEntity.getEmail())
+                        candidateEntity.getUsername(), candidateEntity.getEmail())
                 .ifPresent((user) -> {
                     throw new UserFoundException();
                 });

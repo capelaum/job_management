@@ -1,7 +1,7 @@
 package br.com.capelaum.job_management.modules.candidate.controllers;
 
 import br.com.capelaum.job_management.exceptions.UserFoundException;
-import br.com.capelaum.job_management.modules.candidate.CandidateEntity;
+import br.com.capelaum.job_management.modules.candidate.entities.CandidateEntity;
 import br.com.capelaum.job_management.modules.candidate.useCases.CreateCandidateUseCase;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;

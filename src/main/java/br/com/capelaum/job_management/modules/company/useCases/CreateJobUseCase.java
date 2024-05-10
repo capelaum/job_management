@@ -12,7 +12,6 @@ public class CreateJobUseCase {
     private JobRepository jobRepository;
 
     public JobEntity execute(JobEntity jobEntity) {
-
         return this.jobRepository.save(jobEntity);
     }
 }
