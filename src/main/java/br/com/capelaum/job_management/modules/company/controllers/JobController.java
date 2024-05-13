@@ -1,5 +1,6 @@
 package br.com.capelaum.job_management.modules.company.controllers;
 
+import br.com.capelaum.job_management.modules.company.dto.CreateJobDTO;
 import br.com.capelaum.job_management.modules.company.entities.JobEntity;
 import br.com.capelaum.job_management.modules.company.useCases.CreateJobUseCase;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,12 +25,20 @@ public class JobController {
 
 	@PostMapping("/")
 	public ResponseEntity<Object> create(
-			@Valid @RequestBody JobEntity jobEntity,
+			@Valid @RequestBody CreateJobDTO createJobDTO,
 			HttpServletRequest request) {
 		try {
 			var companyId = request.getAttribute("company_id");
-			jobEntity.setCompanyId(UUID.fromString(companyId.toString()));
+
+			JobEntity jobEntity = JobEntity.builder()
+					.companyId(UUID.fromString(companyId.toString()))
+					.benefits(createJobDTO.getBenefits())
+					.description(createJobDTO.getDescription())
+					.level(createJobDTO.getLevel())
+					.build();
+			
 			JobEntity createdJob = this.createJobUseCase.execute(jobEntity);
+
 			return ResponseEntity.status(HttpStatus.CREATED).body(createdJob);
 		} catch (ValidationException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());

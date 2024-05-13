@@ -33,9 +33,8 @@ public class AuthCompanyUseCase {
 						"Username/Password incorrect"));
 
 		// Verificar se senhas são iguais
-		var passwordMatches =
-				this.passwordEncoder.matches(authCompanyDTO.getPassword(),
-						company.getPassword());
+		var passwordMatches = this.passwordEncoder
+				.matches(authCompanyDTO.getPassword(), company.getPassword());
 
 		if (!passwordMatches) {
 			throw new AuthenticationException("Username/Password incorrect");
