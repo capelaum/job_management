@@ -27,8 +27,8 @@ public class CreateCompanyUseCase {
 					throw new UserFoundException();
 				});
 
-		var encodedPassword = passwordEncoder
-				.encode(companyEntity.getPassword());
+		var encodedPassword =
+				passwordEncoder.encode(companyEntity.getPassword());
 		companyEntity.setPassword(encodedPassword);
 
 		return this.companyRepository.save(companyEntity);
