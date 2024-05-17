@@ -25,8 +25,7 @@ public class JobController {
 
 	@PostMapping("/")
 	public ResponseEntity<Object> create(
-			@Valid @RequestBody CreateJobDTO createJobDTO,
-			HttpServletRequest request) {
+			@Valid @RequestBody CreateJobDTO createJobDTO, HttpServletRequest request) {
 		try {
 			var companyId = request.getAttribute("company_id");
 
@@ -36,7 +35,7 @@ public class JobController {
 					.description(createJobDTO.getDescription())
 					.level(createJobDTO.getLevel())
 					.build();
-			
+
 			JobEntity createdJob = this.createJobUseCase.execute(jobEntity);
 
 			return ResponseEntity.status(HttpStatus.CREATED).body(createdJob);
