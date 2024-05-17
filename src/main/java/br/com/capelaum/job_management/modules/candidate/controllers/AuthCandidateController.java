@@ -1,7 +1,7 @@
-package br.com.capelaum.job_management.modules.company.controllers;
+package br.com.capelaum.job_management.modules.candidate.controllers;
 
-import br.com.capelaum.job_management.modules.company.dto.AuthCompanyDTO;
-import br.com.capelaum.job_management.modules.company.useCases.AuthCompanyUseCase;
+import br.com.capelaum.job_management.modules.candidate.dto.AuthCandidateRequestDTO;
+import br.com.capelaum.job_management.modules.candidate.useCases.AuthCandidateUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,19 +11,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/company")
-public class AuthCompanyController {
+@RequestMapping("/candidate")
+public class AuthCandidateController {
 
 	@Autowired
-	private AuthCompanyUseCase authCompanyUseCase;
+	private AuthCandidateUseCase authCandidateUseCase;
 
 	@PostMapping("/auth")
-	public ResponseEntity<Object> create(@RequestBody AuthCompanyDTO authCompanyDTO) {
+	public ResponseEntity<Object> auth(@RequestBody AuthCandidateRequestDTO authCandidateRequestDTO) {
 		try {
-			var token = this.authCompanyUseCase.execute(authCompanyDTO);
-			return ResponseEntity.ok().body(token);
+			var token = this.authCandidateUseCase.execute(authCandidateRequestDTO);
+			return ResponseEntity.ok(token);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
 		}
+
 	}
+
 }
