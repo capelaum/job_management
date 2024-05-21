@@ -1,11 +1,7 @@
 package br.com.capelaum.job_management.modules.company.controllers;
 
-import br.com.capelaum.job_management.modules.company.dto.CreateJobDTO;
-import br.com.capelaum.job_management.modules.company.entities.JobEntity;
-import br.com.capelaum.job_management.modules.company.useCases.CreateJobUseCase;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
-import jakarta.validation.ValidationException;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +11,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
+import br.com.capelaum.job_management.modules.company.dto.CreateJobDTO;
+import br.com.capelaum.job_management.modules.company.entities.JobEntity;
+import br.com.capelaum.job_management.modules.company.useCases.CreateJobUseCase;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 
 @RestController
 @RequestMapping("/company/job")
@@ -26,6 +28,7 @@ public class JobController {
 
 	@PostMapping("/")
 	@PreAuthorize("hasRole('COMPANY')")
+	@SecurityRequirement(name = "jwt_auth")
 	public ResponseEntity<Object> create(
 			@Valid @RequestBody CreateJobDTO createJobDTO, HttpServletRequest request) {
 		try {
