@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.capelaum.job_management.exceptions.UserFoundException;
+import br.com.capelaum.job_management.modules.candidate.dto.ProfileCandidateResponseDTO;
 import br.com.capelaum.job_management.modules.candidate.entities.CandidateEntity;
 import br.com.capelaum.job_management.modules.candidate.useCases.CreateCandidateUseCase;
 import br.com.capelaum.job_management.modules.candidate.useCases.ListAllJobsByFilterUseCase;
@@ -59,6 +60,16 @@ public class CandidateController {
 
 	@GetMapping("/")
 	@PreAuthorize("hasRole('CANDIDATE')")
+	@Tag(name = "Candidato", description = "Informações do candidato")
+	@Operation(summary = "Perfil do candidato", description = "Dados do candidato")
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", content = {
+					@Content(schema = @Schema(implementation = ProfileCandidateResponseDTO.class))
+			}),
+
+			@ApiResponse(responseCode = "400", description = "User not found")
+	})
+	@SecurityRequirement(name = "jwt_auth")
 	public ResponseEntity<Object> get(HttpServletRequest request) {
 		var candidateId = request.getAttribute("candidate_id");
 
