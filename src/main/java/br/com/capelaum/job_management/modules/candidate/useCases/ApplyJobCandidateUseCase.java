@@ -2,6 +2,7 @@ package br.com.capelaum.job_management.modules.candidate.useCases;
 
 import br.com.capelaum.job_management.exceptions.JobNotFoundException;
 import br.com.capelaum.job_management.exceptions.UserNotFoundException;
+import br.com.capelaum.job_management.modules.candidate.entities.ApplyJobEntity;
 import br.com.capelaum.job_management.modules.candidate.repositories.ApplyJobRepository;
 import br.com.capelaum.job_management.modules.candidate.repositories.CandidateRepository;
 import br.com.capelaum.job_management.modules.company.repositories.JobRepository;
@@ -15,12 +16,14 @@ public class ApplyJobCandidateUseCase {
 
 	@Autowired
 	ApplyJobRepository applyJobRepository;
+
 	@Autowired
 	private CandidateRepository candidateRepository;
+
 	@Autowired
 	private JobRepository jobRepository;
 
-	public void execute(UUID candidateId, UUID jobId) {
+	public ApplyJobEntity execute(UUID candidateId, UUID jobId) {
 		candidateRepository.findById(candidateId)
 				.orElseThrow(() -> {
 					throw new UserNotFoundException();
@@ -31,6 +34,11 @@ public class ApplyJobCandidateUseCase {
 					throw new JobNotFoundException();
 				});
 
-		// Candidatura
+		var applyJob = ApplyJobEntity.builder()
+				.candidateId(candidateId)
+				.jobId(jobId)
+				.build();
+
+		return applyJobRepository.save(applyJob);
 	}
 }
