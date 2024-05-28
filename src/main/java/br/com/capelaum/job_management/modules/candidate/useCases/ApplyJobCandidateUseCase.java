@@ -1,35 +1,44 @@
 package br.com.capelaum.job_management.modules.candidate.useCases;
 
-import java.util.UUID;
-
+import br.com.capelaum.job_management.exceptions.JobNotFoundException;
+import br.com.capelaum.job_management.exceptions.UserNotFoundException;
+import br.com.capelaum.job_management.modules.candidate.entities.ApplyJobEntity;
+import br.com.capelaum.job_management.modules.candidate.repositories.ApplyJobRepository;
+import br.com.capelaum.job_management.modules.candidate.repositories.CandidateRepository;
+import br.com.capelaum.job_management.modules.company.repositories.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.capelaum.job_management.exceptions.JobNotFoundException;
-import br.com.capelaum.job_management.exceptions.UserNotFoundException;
-import br.com.capelaum.job_management.modules.candidate.repositories.CandidateRepository;
-import br.com.capelaum.job_management.modules.company.repositories.JobRepository;
+import java.util.UUID;
 
 @Service
 public class ApplyJobCandidateUseCase {
 
-    @Autowired
-    private CandidateRepository candidateRepository;
+	@Autowired
+	ApplyJobRepository applyJobRepository;
 
-    @Autowired
-    private JobRepository jobRepository;
+	@Autowired
+	private CandidateRepository candidateRepository;
 
-    public void execute(UUID candidateId, UUID jobId) {
-        candidateRepository.findById(candidateId)
-                .orElseThrow(() -> {
-                    throw new UserNotFoundException();
-                });
+	@Autowired
+	private JobRepository jobRepository;
 
-        jobRepository.findById(jobId)
-                .orElseThrow(() -> {
-                    throw new JobNotFoundException();
-                });
+	public ApplyJobEntity execute(UUID candidateId, UUID jobId) {
+		candidateRepository.findById(candidateId)
+				.orElseThrow(() -> {
+					throw new UserNotFoundException();
+				});
 
-        // Candidatura
-    }
+		jobRepository.findById(jobId)
+				.orElseThrow(() -> {
+					throw new JobNotFoundException();
+				});
+
+		var applyJob = ApplyJobEntity.builder()
+				.candidateId(candidateId)
+				.jobId(jobId)
+				.build();
+
+		return applyJobRepository.save(applyJob);
+	}
 }
