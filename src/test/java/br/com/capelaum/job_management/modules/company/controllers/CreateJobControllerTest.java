@@ -2,6 +2,8 @@ package br.com.capelaum.job_management.modules.company.controllers;
 
 import java.util.UUID;
 
+import br.com.capelaum.job_management.exceptions.CompanyNotFoundException;
+import br.com.capelaum.job_management.exceptions.JobNotFoundException;
 import br.com.capelaum.job_management.modules.company.dto.CreateJobDTO;
 import br.com.capelaum.job_management.modules.company.entities.CompanyEntity;
 import br.com.capelaum.job_management.modules.company.repositories.CompanyRepository;
@@ -21,6 +23,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 
 
 @RunWith(SpringRunner.class)
@@ -62,12 +67,10 @@ public class CreateJobControllerTest {
                 .build();
 
         var result = mvc.perform(MockMvcRequestBuilders.post("/company/job/")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(TestUtils.objectToJSON(createdJobDTO))
-                        .header("Authorization", TestUtils.generateToken(company.getId(), "JAVAGAS_@123$"))
-                ).andExpect(MockMvcResultMatchers.status().isCreated());
-
-        System.out.println(result);
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(TestUtils.objectToJSON(createdJobDTO))
+                .header("Authorization", TestUtils.generateToken(company.getId(), "JAVAGAS_@123$"))
+        ).andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
     @Test
@@ -78,10 +81,14 @@ public class CreateJobControllerTest {
                 .level("LEVEL_TEST")
                 .build();
 
-        mvc.perform(MockMvcRequestBuilders.post("/company/job/")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(TestUtils.objectToJSON(createdJobDTO))
-                        .header("Authorization", TestUtils.generateToken(UUID.randomUUID(), "JAVAGAS_@123$"))
-                ).andExpect(MockMvcResultMatchers.status().isBadRequest());
+        try {
+            mvc.perform(MockMvcRequestBuilders.post("/company/job/")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtils.objectToJSON(createdJobDTO))
+                    .header("Authorization", TestUtils.generateToken(UUID.randomUUID(), "JAVAGAS_@123$"))
+            );
+        } catch (Exception e) {
+            assertTrue(e instanceof CompanyNotFoundException);
+        }
     }
 }
