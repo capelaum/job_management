@@ -1,8 +1,10 @@
 package br.com.capelaum.job_management.modules.candidate.controllers;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import br.com.capelaum.job_management.modules.candidate.useCases.ApplyJobCandidateUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,60 +39,79 @@ import jakarta.validation.ValidationException;
 @Tag(name = "Candidato", description = "Informações do candidato")
 public class CandidateController {
 
-	@Autowired
-	private CreateCandidateUseCase createCandidateUseCase;
+    @Autowired
+    private CreateCandidateUseCase createCandidateUseCase;
 
-	@Autowired
-	private ProfileCandidateUseCase profileCandidateUseCase;
+    @Autowired
+    private ProfileCandidateUseCase profileCandidateUseCase;
 
-	@Autowired
-	private ListAllJobsByFilterUseCase listAllJobsByFilterUseCase;
+    @Autowired
+    private ListAllJobsByFilterUseCase listAllJobsByFilterUseCase;
 
-	@PostMapping("/")
-	@Operation(summary = "Cadastro de candidato", description = "Cadastro de novo candidato")
-	@ApiResponse(responseCode = "200", content = {
-			@Content(schema = @Schema(implementation = CandidateEntity.class))
-	})
-	@ApiResponse(responseCode = "400", description = "Usuário já existe")
-	@ApiResponse(responseCode = "500", description = "Ocorreu um erro inesperado")
-	public ResponseEntity<Object> create(@Valid @RequestBody CandidateEntity candidateEntity) {
-		try {
-			CandidateEntity createdCandidate = this.createCandidateUseCase.execute(candidateEntity);
-			return ResponseEntity.status(HttpStatus.CREATED).body(createdCandidate);
-		} catch (UserFoundException | ValidationException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocorreu um erro inesperado");
-		}
-	}
+    @Autowired
+    private ApplyJobCandidateUseCase applyJobCandidateUseCase;
 
-	@GetMapping("/")
-	@PreAuthorize("hasRole('CANDIDATE')")
-	@Operation(summary = "Perfil do candidato", description = "Dados do candidato")
-	@ApiResponse(responseCode = "200", content = {
-			@Content(schema = @Schema(implementation = ProfileCandidateResponseDTO.class))
-	})
-	@ApiResponse(responseCode = "400", description = "User not found")
-	@SecurityRequirement(name = "jwt_auth")
-	public ResponseEntity<Object> get(HttpServletRequest request) {
-		var candidateId = request.getAttribute("candidate_id");
+    @PostMapping("/")
+    @Operation(summary = "Cadastro de candidato", description = "Cadastro de novo candidato")
+    @ApiResponse(responseCode = "200", content = {
+            @Content(schema = @Schema(implementation = CandidateEntity.class))
+    })
+    @ApiResponse(responseCode = "400", description = "Usuário já existe")
+    @ApiResponse(responseCode = "500", description = "Ocorreu um erro inesperado")
+    public ResponseEntity<Object> create(@Valid @RequestBody CandidateEntity candidateEntity) {
+        try {
+            CandidateEntity createdCandidate = this.createCandidateUseCase.execute(candidateEntity);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdCandidate);
+        } catch (UserFoundException | ValidationException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocorreu um erro inesperado");
+        }
+    }
 
-		try {
-			var profile = this.profileCandidateUseCase.execute(UUID.fromString(candidateId.toString()));
-			return ResponseEntity.ok(profile);
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
-	}
+    @GetMapping("/")
+    @PreAuthorize("hasRole('CANDIDATE')")
+    @Operation(summary = "Perfil do candidato", description = "Dados do candidato")
+    @ApiResponse(responseCode = "200", content = {
+            @Content(schema = @Schema(implementation = ProfileCandidateResponseDTO.class))
+    })
+    @ApiResponse(responseCode = "400", description = "User not found")
+    @SecurityRequirement(name = "jwt_auth")
+    public ResponseEntity<Object> get(HttpServletRequest request) {
+        var candidateId = request.getAttribute("candidate_id");
 
-	@GetMapping("/job")
-	@PreAuthorize("hasRole('CANDIDATE')")
-	@Operation(summary = "Listagem de vagas disponíveis para o candidato", description = "Lista todas vagas disponíveis, aceitando filtros aplicados no campo de descrição")
-	@ApiResponse(responseCode = "200", content = {
-			@Content(array = @ArraySchema(schema = @Schema(implementation = JobEntity.class)))
-	})
-	@SecurityRequirement(name = "jwt_auth")
-	public List<JobEntity> findJobByFilter(@RequestParam String filter) {
-		return listAllJobsByFilterUseCase.execute(filter);
-	}
+        try {
+            var profile = this.profileCandidateUseCase.execute(UUID.fromString(candidateId.toString()));
+            return ResponseEntity.ok(profile);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/job")
+    @PreAuthorize("hasRole('CANDIDATE')")
+    @Operation(summary = "Listagem de vagas disponíveis para o candidato", description = "Lista todas vagas disponíveis, aceitando filtros aplicados no campo de descrição")
+    @ApiResponse(responseCode = "200", content = {
+            @Content(array = @ArraySchema(schema = @Schema(implementation = JobEntity.class)))
+    })
+    @SecurityRequirement(name = "jwt_auth")
+    public List<JobEntity> findJobByFilter(@RequestParam(required = false) String filter) {
+        return listAllJobsByFilterUseCase.execute(filter);
+    }
+
+    @PostMapping("/job/apply")
+    @PreAuthorize("hasRole('CANDIDATE')")
+    @Operation(summary = "Inscrição do candidato para uma vaga", description = "Faz a inscrição do candidato para uma determinada vaga")
+    @SecurityRequirement(name = "jwt_auth")
+    public ResponseEntity<Object> applyJob(HttpServletRequest request, @RequestBody UUID jobId) {
+        var candidateId = request.getAttribute("candidate_id");
+
+        try {
+            var result = this.applyJobCandidateUseCase
+                    .execute(UUID.fromString(candidateId.toString()), jobId);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

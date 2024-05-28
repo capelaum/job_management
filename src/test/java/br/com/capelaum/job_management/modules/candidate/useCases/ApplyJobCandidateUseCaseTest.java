@@ -65,7 +65,7 @@ public class ApplyJobCandidateUseCaseTest {
 	}
 
 	@Test
-	public void should_be_able_to_create_a_new_aplly_job() {
+	public void should_be_able_to_create_a_new_apply_job() {
 		var candidateId = UUID.randomUUID();
 		var jobId = UUID.randomUUID();
 
