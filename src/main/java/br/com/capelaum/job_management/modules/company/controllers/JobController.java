@@ -29,40 +29,35 @@ import jakarta.validation.ValidationException;
 @RequestMapping("/company/job")
 public class JobController {
 
-	@Autowired
-	private CreateJobUseCase createJobUseCase;
+    @Autowired
+    private CreateJobUseCase createJobUseCase;
 
-	@PostMapping("/")
-	@PreAuthorize("hasRole('COMPANY')")
-	@Tag(name = "Vagas", description = "Informações das vagas")
-	@Operation(summary = "Cadastro de vagas", description = "Cadastro de uma nova vaga de uma empresa")
-	@ApiResponses({
-			@ApiResponse(responseCode = "201", content = {
-					@Content(schema = @Schema(implementation = JobEntity.class))
-			})
-	})
-	@SecurityRequirement(name = "jwt_auth")
-	public ResponseEntity<Object> create(
-			@Valid @RequestBody CreateJobDTO createJobDTO, HttpServletRequest request) {
-		try {
-			var companyId = request.getAttribute("company_id");
+    @PostMapping("/")
+    @PreAuthorize("hasRole('COMPANY')")
+    @Tag(name = "Vagas", description = "Informações das vagas")
+    @Operation(summary = "Cadastro de vagas", description = "Cadastro de uma nova vaga de uma empresa")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", content = {
+                    @Content(schema = @Schema(implementation = JobEntity.class))
+            })
+    })
+    @SecurityRequirement(name = "jwt_auth")
+    public ResponseEntity<Object> create(@Valid @RequestBody CreateJobDTO createJobDTO, HttpServletRequest request) {
+        try {
+            var companyId = request.getAttribute("company_id");
 
-			JobEntity jobEntity = JobEntity.builder()
-					.companyId(UUID.fromString(companyId.toString()))
-					.benefits(createJobDTO.getBenefits())
-					.description(createJobDTO.getDescription())
-					.level(createJobDTO.getLevel())
-					.build();
+            JobEntity jobEntity = JobEntity.builder()
+                    .companyId(UUID.fromString(companyId.toString()))
+                    .benefits(createJobDTO.getBenefits())
+                    .description(createJobDTO.getDescription())
+                    .level(createJobDTO.getLevel())
+                    .build();
 
-			JobEntity createdJob = this.createJobUseCase.execute(jobEntity);
+            JobEntity createdJob = this.createJobUseCase.execute(jobEntity);
 
-			return ResponseEntity.status(HttpStatus.CREATED).body(createdJob);
-		} catch (ValidationException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		} catch (Exception e) {
-			return ResponseEntity
-					.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Ocorreu um erro inesperado");
-		}
-	}
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdJob);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
