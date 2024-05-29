@@ -17,36 +17,34 @@ import java.io.IOException;
 @Component
 public class SecurityCandidateFilter extends OncePerRequestFilter {
 
-	@Autowired
-	private JWTCandidateProvider jwtCandidateProvider;
+    @Autowired
+    private JWTCandidateProvider jwtCandidateProvider;
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 //		SecurityContextHolder.getContext().setAuthentication(null);
-		String bearerToken = request.getHeader("Authorization");
+        String bearerToken = request.getHeader("Authorization");
 
-		if (request.getRequestURI().startsWith("/candidate") && bearerToken != null) {
-			var token = this.jwtCandidateProvider.validateToken(bearerToken);
+        if (request.getRequestURI().startsWith("/candidate") && bearerToken != null) {
+            var token = this.jwtCandidateProvider.validateToken(bearerToken);
 
-			if (token == null) {
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				return;
-			}
+            if (token == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
 
-			request.setAttribute("candidate_id", token.getSubject());
+            request.setAttribute("candidate_id", token.getSubject());
 
-			var roles = token.getClaim("roles").asList(Object.class);
-			var grants = roles.stream()
-					.map(role -> new SimpleGrantedAuthority("ROLE_" + role.toString().toUpperCase()))
-					.toList();
+            var roles = token.getClaim("roles").asList(Object.class);
+            var grants = roles.stream()
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toString().toUpperCase()))
+                    .toList();
 
-			UsernamePasswordAuthenticationToken auth =
-					new UsernamePasswordAuthenticationToken(token.getSubject(), null, grants);
+            var auth = new UsernamePasswordAuthenticationToken(token.getSubject(), null, grants);
 
-			SecurityContextHolder.getContext().setAuthentication(auth);
-		}
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        }
 
-		filterChain.doFilter(request, response);
-
-	}
+        filterChain.doFilter(request, response);
+    }
 }
