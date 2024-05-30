@@ -24,20 +24,15 @@ public class ApplyJobCandidateUseCase {
 	private JobRepository jobRepository;
 
 	public ApplyJobEntity execute(UUID candidateId, UUID jobId) {
-		candidateRepository.findById(candidateId)
-				.orElseThrow(() -> {
-					throw new UserNotFoundException();
-				});
+		candidateRepository.findById(candidateId).orElseThrow(() -> {
+			throw new UserNotFoundException();
+		});
 
-		jobRepository.findById(jobId)
-				.orElseThrow(() -> {
-					throw new JobNotFoundException();
-				});
+		jobRepository.findById(jobId).orElseThrow(() -> {
+			throw new JobNotFoundException();
+		});
 
-		var applyJob = ApplyJobEntity.builder()
-				.candidateId(candidateId)
-				.jobId(jobId)
-				.build();
+		var applyJob = ApplyJobEntity.builder().candidateId(candidateId).jobId(jobId).build();
 
 		return applyJobRepository.save(applyJob);
 	}

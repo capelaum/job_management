@@ -18,15 +18,12 @@ public class CreateCandidateUseCase {
 
 	public CandidateEntity execute(CandidateEntity candidateEntity) {
 		this.candidateRepository
-				.findByUsernameOrEmail(
-						candidateEntity.getUsername(),
-						candidateEntity.getEmail())
+				.findByUsernameOrEmail(candidateEntity.getUsername(), candidateEntity.getEmail())
 				.ifPresent((user) -> {
 					throw new UserFoundException();
 				});
 
-		var encodedPassword =
-				passwordEncoder.encode(candidateEntity.getPassword());
+		var encodedPassword = passwordEncoder.encode(candidateEntity.getPassword());
 		candidateEntity.setPassword(encodedPassword);
 
 		return this.candidateRepository.save(candidateEntity);

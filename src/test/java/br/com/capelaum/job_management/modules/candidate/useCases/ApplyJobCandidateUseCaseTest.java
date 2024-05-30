@@ -65,6 +65,7 @@ public class ApplyJobCandidateUseCaseTest {
 	}
 
 	@Test
+	@DisplayName("Should be able to create a new apply job")
 	public void should_be_able_to_create_a_new_apply_job() {
 		var candidateId = UUID.randomUUID();
 		var jobId = UUID.randomUUID();
