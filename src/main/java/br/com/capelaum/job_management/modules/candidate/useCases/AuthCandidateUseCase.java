@@ -50,11 +50,9 @@ public class AuthCandidateUseCase {
 				.withExpiresAt(expiresAt)
 				.sign(algorithm);
 
-		AuthCandidateResponseDTO authCandidateResponse = AuthCandidateResponseDTO.builder()
+		return AuthCandidateResponseDTO.builder()
 				.access_token(token)
 				.expires_at(expiresAt.toEpochMilli())
 				.build();
-
-		return authCandidateResponse;
 	}
 }
