@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:14.12-alpine
+    container_name: jm_postgres
+    ports:
+      - 5430:5432
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=jm_db
+    volumes:
+      - ./config/pg-data:/data/postgres
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    container_name: jm_prometheus
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./config/prom-data:/prometheus
+    networks:
+      - jm-network
+    ports:
+      - 9093:9090
+
+volumes:
+  pg-data:
+    driver: local
+  prometheus-data:
+    driver: local
+
+networks:
+  jm-network:
+    driver: bridge
+
