@@ -14,8 +14,8 @@ target/
 .sts4-cache
 
 ### Container Volumes ###
-./config/pg-data/
-./config/prom-data/
+config/pg-data/*
+config/prom-data/*
 
 ### IntelliJ IDEA ###
 .idea
@@ -32,6 +32,3 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
-
-### VS Code ###
-.vscode/
