@@ -1,4 +1,24 @@
 services:
+  api:
+    image: eclipse-temurin:21-jre
+    container_name: jm_api
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./target:/app
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://jm_postgres:5432/jm_db
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SECURITY_TOKEN_SECRET_COMPANY=JAVAGAS_@123$
+      - SECURITY_TOKEN_SECRET_CANDIDATE=JAVAGAS_@123$CANDIDATE
+      - SERVER_PORT=8080
+    networks:
+      - jm-network
+    command: java -jar /app/job_management-0.0.1-SNAPSHOT.jar
+    depends_on:
+      - postgres
+
   postgres:
     image: postgres:14.12-alpine
     container_name: jm_postgres
@@ -8,8 +28,11 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=jm_db
+    networks:
+      - jm-network
     volumes:
       - ./config/pg-data:/data/postgres
+
   prometheus:
     image: prom/prometheus:v2.52.0
     container_name: jm_prometheus
@@ -20,6 +43,7 @@ services:
       - jm-network
     ports:
       - "9093:9090"
+
   grafana:
     image: grafana/grafana:10.2.7
     container_name: jm_grafana
