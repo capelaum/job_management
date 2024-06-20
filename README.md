@@ -1,5 +1,5 @@
 # Job Management App
 
-Java Spring API to manage candidates, companies and jobs.
+Java Spring Boot API to manage candidates, companies and jobs.
 
-🤍 For learning purposes. 
+_For learning purposes 🤍_
